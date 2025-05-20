@@ -16,9 +16,9 @@ public class CallHandlingServiceImpl implements CallHandlingService {
     CustomerManagementService customerService;
     DiaryManagementService diaryService;
 
-    public CallHandlingServiceImpl(CustomerManagementServiceProductionImpl customerManagementServiceProduction, DiaryManagementServiceMockImpl diaryManagementServiceMock) {
-        customerService = customerManagementServiceProduction;
-        diaryService = diaryManagementServiceMock;
+    public CallHandlingServiceImpl(CustomerManagementService customerService, DiaryManagementService diaryService) {
+        this.customerService = customerService;
+        this.diaryService = diaryService;
     }
 
     @Override

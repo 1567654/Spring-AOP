@@ -8,6 +8,7 @@ import se.yrgo.domain.Customer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 class CustomerMapper implements RowMapper<Customer> {
@@ -22,6 +23,17 @@ class CustomerMapper implements RowMapper<Customer> {
         return new Customer(customerId, companyName, email, telephone, notes);
     }
 }
+
+class CallMapper implements RowMapper<Call> {
+
+    @Override
+    public Call mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Date timeAndDate = rs.getDate(2);
+        String notes = rs.getString(3);
+        return new Call(notes, timeAndDate);
+    }
+}
+
 
 public class CustomerDaoJdbcTemplateImpl implements CustomerDao {
     private static final String DELETE_SQL = "DELETE FROM CUSTOMER WHERE CUSTOMER_ID=?";
@@ -68,8 +80,11 @@ public class CustomerDaoJdbcTemplateImpl implements CustomerDao {
 
     @Override
     public Customer getFullCustomerDetail(String customerId) throws RecordNotFoundException {
-        Customer customer = template.queryForObject("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID=?", new CustomerMapper(), customerId);
-        return template.queryForObject("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID=?", new CustomerMapper(), customerId);
+        Customer customer = getById(customerId);
+        List<Call> allCalls = template.query("SELECT * FROM TBL_CALL WHERE CUSTOMER_ID=?",
+                new CallMapper(), customerId);
+        customer.setCalls(allCalls);
+        return customer;
     }
 
     @Override
